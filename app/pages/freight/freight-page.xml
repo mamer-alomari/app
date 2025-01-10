@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="onNavigatingTo">
+    <GridLayout rows="auto, *">
+        <GridLayout columns="auto, *" class="p-4">
+            <Label text="‹" tap="{{ onBack }}" class="text-2xl" col="0" />
+            <Label text="Freight" class="text-2xl font-bold text-center" col="1" />
+        </GridLayout>
+
+        <StackLayout row="1" class="p-4">
+            <Image src="~/images/fedex.png" class="h-16 mb-8" />
+            
+            <GridLayout rows="auto, auto" class="mb-8">
+                <GridLayout columns="auto, *" row="0">
+                    <Label text="📍" class="text-2xl mr-2" col="0" />
+                    <Label text="{{ address }}" class="text-xl font-semibold" col="1" />
+                </GridLayout>
+                <Label text="Distance: {{ distance }}" class="text-gray-500 ml-8" row="1" />
+            </GridLayout>
+
+            <GridLayout rows="auto, auto" class="mb-8">
+                <Label text="{{ destinationAddress }}" class="text-xl font-semibold" row="0" />
+                <Label text="ETA: {{ eta }}" class="text-gray-500" row="1" />
+            </GridLayout>
+
+            <Label text="${{ price }}" class="text-3xl font-bold text-right" />
+        </StackLayout>
+    </GridLayout>
+</Page>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="onNavigatingTo">
+    <GridLayout rows="auto, *, auto">
+        <GridLayout columns="auto, *, auto" class="p-4">
+            <Label text="‹" tap="{{ onBack }}" class="text-2xl" col="0" />
+            <Label text="Items" class="text-2xl font-bold text-center" col="1" />
+            <Button text="📷" tap="{{ onOpenCamera }}" class="text-2xl" col="2" />
+        </GridLayout>
+        
+        <ScrollView row="1">
+            <StackLayout class="p-4">
+                <GridLayout rows="auto, auto" columns="auto, *, auto" class="mb-4" repeat="{{ items }}">
+                    <Image src="{{ icon }}" width="50" height="50" row="0" col="0" rowSpan="2" class="mr-4" />
+                    <Label text="{{ name }}" class="text-lg font-semibold" row="0" col="1" />
+                    <Label text="{{ size }}" class="text-gray-500" row="1" col="1" />
+                    <Button text="{{ selected ? '×' : '+' }}" 
+                           tap="{{ $parent.onToggleItem }}" 
+                           class="w-8 h-8 rounded-full {{ selected ? 'bg-black text-white' : 'bg-gray-200' }}"
+                           row="0" col="2" rowSpan="2" />
+                </GridLayout>
+            </StackLayout>
+        </ScrollView>
+        
+        <Button text="VIEW CART ({{ selectedCount }})" 
+                tap="{{ onViewCart }}" 
+                class="bg-black text-white text-lg p-4 m-4 rounded-lg" 
+                row="2" 
+                verticalAlignment="bottom"
+                visibility="{{ selectedCount > 0 ? 'visible' : 'collapsed' }}" />
+    </GridLayout>
+</Page>

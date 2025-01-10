@@ -1,0 +1,48 @@
+fleet-management/
+├── packages/
+│   ├── shared/                    # Shared utilities, types, and components
+│   │   ├── types/
+│   │   ├── utils/
+│   │   └── components/
+│   │
+│   ├── provider-app/             # Service Provider Application
+│   │   ├── src/
+│   │   │   ├── features/         # Feature-based modules
+│   │   │   │   ├── vehicles/
+│   │   │   │   ├── maintenance/
+│   │   │   │   ├── workers/
+│   │   │   │   └── scheduling/
+│   │   │   ├── services/
+│   │   │   ├── hooks/
+│   │   │   └── components/
+│   │   └── tests/
+│   │
+│   └── customer-app/             # Customer-facing Application
+│       ├── src/
+│       │   ├── features/
+│       │   │   ├── booking/
+│       │   │   ├── tracking/
+│       │   │   └── payments/
+│       │   ├── services/
+│       │   ├── hooks/
+│       │   └── components/
+│       └── tests/
+│
+├── api/                          # Backend API
+│   ├── src/
+│   │   ├── modules/
+│   │   │   ├── auth/
+│   │   │   ├── vehicles/
+│   │   │   ├── maintenance/
+│   │   │   ├── workers/
+│   │   │   ├── scheduling/
+│   │   │   └── payments/
+│   │   ├── middleware/
+│   │   ├── utils/
+│   │   └── config/
+│   └── tests/
+│
+└── infrastructure/               # Infrastructure configuration
+    ├── docker/
+    ├── kubernetes/
+    └── terraform/ 

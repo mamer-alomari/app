@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="onNavigatingTo">
+    <GridLayout rows="auto, *, auto">
+        <GridLayout columns="auto, *" class="p-4">
+            <Label text="‹" tap="{{ onBack }}" class="text-2xl" col="0" />
+            <Label text="Cart" class="text-2xl font-bold text-center" col="1" />
+        </GridLayout>
+
+        <ScrollView row="1">
+            <StackLayout class="p-4">
+                <GridLayout rows="auto" columns="auto, *, auto, auto" class="mb-4" repeat="{{ cartItems }}">
+                    <Image src="{{ icon }}" width="50" height="50" col="0" class="mr-4" />
+                    <StackLayout col="1">
+                        <Label text="{{ name }}" class="text-lg font-semibold" />
+                        <Label text="{{ size }}" class="text-gray-500" />
+                    </StackLayout>
+                    <GridLayout columns="auto, auto, auto" col="2" class="mr-4">
+                        <Button text="-" tap="{{ $parent.onDecreaseQuantity }}" class="w-8 h-8" col="0" />
+                        <Label text="{{ quantity }}" class="text-center w-8" col="1" />
+                        <Button text="+" tap="{{ $parent.onIncreaseQuantity }}" class="w-8 h-8" col="2" />
+                    </GridLayout>
+                    <Button text="×" tap="{{ $parent.onRemoveItem }}" class="w-8 h-8" col="3" />
+                </GridLayout>
+            </StackLayout>
+        </ScrollView>
+
+        <Button text="GET QUOTE ›" 
+                tap="{{ onGetQuote }}" 
+                class="bg-black text-white text-lg p-4 m-4 rounded-lg"
+                row="2" />
+    </GridLayout>
+</Page>

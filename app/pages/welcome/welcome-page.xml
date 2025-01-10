@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page xmlns="http://schemas.nativescript.org/tns.xsd" navigatingTo="onNavigatingTo" class="bg-slate-700">
+    <ActionBar title="" flat="true" backgroundColor="transparent" />
+    <StackLayout class="p-8 items-center justify-center h-full">
+        <Label text="moove" class="text-7xl font-bold mb-1 text-white" />
+        <Label text="let's get you mooving." class="text-lg mb-16 text-gray-300" />
+        
+        <Button text="Get Started ›" tap="{{ onGetStarted }}" class="bg-black text-white text-lg py-4 rounded-lg w-full mb-6" />
+        
+        <Label text="Already have an account?" class="text-center text-gray-300 mb-2" />
+        <Button text="Log In ›" tap="{{ onLogin }}" class="bg-white text-black text-lg py-4 rounded-lg w-full" />
+    </StackLayout>
+</Page>
