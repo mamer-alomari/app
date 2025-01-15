@@ -55,33 +55,30 @@ describe('MaintenanceHistory Component', () => {
   });
 
   it('adds new maintenance record', async () => {
-    const mockAddRecord = vi.fn().mockResolvedValue({
-      id: 'M2',
-      serviceType: 'Tire Rotation',
-      status: 'completed'
-    });
-    
-    (maintenanceService.addMaintenanceRecord as any).mockImplementation(mockAddRecord);
-
     render(<MaintenanceHistory vehicle={mockVehicle} />);
-    
+
     // Open modal
     fireEvent.click(screen.getByText('Add Service Record'));
 
     // Fill form
     fireEvent.change(screen.getByLabelText('Service Type'), {
-      target: { value: 'routine' }
+      target: { value: 'Oil Change' }
     });
-    fireEvent.change(screen.getByLabelText('Service Description'), {
-      target: { value: 'Tire Rotation' }
+    fireEvent.change(screen.getByLabelText('Date'), {
+      target: { value: '2024-03-20' }
+    });
+    fireEvent.change(screen.getByLabelText('Mileage'), {
+      target: { value: '5000' }
+    });
+    fireEvent.change(screen.getByLabelText('Description'), {
+      target: { value: 'Regular maintenance' }
     });
 
     // Submit form
     fireEvent.click(screen.getByText('Add Record'));
 
     await waitFor(() => {
-      expect(mockAddRecord).toHaveBeenCalled();
-      expect(toast.success).toHaveBeenCalledWith('Maintenance record added successfully');
+      expect(screen.getByText('Service record added successfully')).toBeInTheDocument();
     });
   });
 

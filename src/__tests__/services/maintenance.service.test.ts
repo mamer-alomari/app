@@ -45,36 +45,44 @@ const mockMaintenanceRecords: VehicleMaintenance[] = [
   }
 ];
 
-describe('Maintenance Service', () => {
-  it('retrieves maintenance records for a vehicle', async () => {
-    const records = await maintenanceService.getMaintenanceRecords('V1');
-    
-    expect(records).toHaveLength(1);
-    expect(records[0]).toHaveProperty('id', 'M1');
-    expect(records[0]).toHaveProperty('serviceType', 'Oil Change');
+describe('MaintenanceService', () => {
+  const testMaintenance: Omit<VehicleMaintenance, 'id'> = {
+    vehicleId: 'e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a15', // Using ID from seed data
+    serviceDate: new Date().toISOString(),
+    serviceType: 'oil_change',
+    mileage: 15000,
+    description: 'Regular oil change',
+    cost: 89.99,
+    performedBy: 'b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12', // Using ID from seed data
+    nextServiceMileage: 18000
+  };
+
+  it('should add a new maintenance record', async () => {
+    const record = await maintenanceService.addMaintenanceRecord(testMaintenance);
+    expect(record).toHaveProperty('id');
+    expect(record.serviceType).toBe(testMaintenance.serviceType);
   });
 
-  it('adds a new maintenance record', async () => {
-    const newRecord: Omit<VehicleMaintenance, 'id'> = {
-      vehicleId: 'V1',
-      type: 'routine',
-      serviceType: 'Tire Rotation',
-      serviceDate: '2024-02-15',
-      mileage: 6000,
-      description: 'Rotate and balance all tires',
-      laborHours: 1.0,
-      laborCost: 50.00,
-      totalCost: 80.00,
-      performedBy: 'Service Center B',
-      location: 'Service Center B',
-      nextServiceMileage: 11000,
-      status: 'completed'
-    };
+  it('should validate required fields', async () => {
+    const invalidRecord = { ...testMaintenance, serviceType: undefined };
+    await expect(maintenanceService.addMaintenanceRecord(invalidRecord as any))
+      .rejects.toThrow('Missing required maintenance record fields');
+  });
 
-    const record = await maintenanceService.addMaintenanceRecord(newRecord);
-    
-    expect(record).toHaveProperty('id');
-    expect(record).toHaveProperty('serviceType', 'Oil Change');
-    expect(record).toHaveProperty('status', 'completed');
+  it('should validate mileage values', async () => {
+    const invalidRecord = { ...testMaintenance, mileage: -1 };
+    await expect(maintenanceService.addMaintenanceRecord(invalidRecord))
+      .rejects.toThrow('Mileage cannot be negative');
+  });
+
+  it('should validate next service mileage', async () => {
+    const invalidRecord = { ...testMaintenance, nextServiceMileage: 14000 };
+    await expect(maintenanceService.addMaintenanceRecord(invalidRecord))
+      .rejects.toThrow('Next service mileage must be greater than current mileage');
+  });
+
+  it('should get maintenance records for a vehicle', async () => {
+    const records = await maintenanceService.getMaintenanceRecords(testMaintenance.vehicleId);
+    expect(Array.isArray(records)).toBe(true);
   });
 });

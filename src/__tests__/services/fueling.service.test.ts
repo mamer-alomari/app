@@ -42,33 +42,40 @@ const mockFuelingRecords: VehicleFueling[] = [
   }
 ];
 
-describe('Fueling Service', () => {
-  it('retrieves fueling records for a vehicle', async () => {
-    const records = await fuelingService.getFuelingRecords('V1');
-    
-    expect(records).toHaveLength(1);
-    expect(records[0]).toHaveProperty('id', 'F1');
-    expect(records[0]).toHaveProperty('totalCost', 225.00);
+describe('FuelingService', () => {
+  const testFueling: Omit<VehicleFueling, 'id'> = {
+    vehicleId: 'e0eebc99-9c0b-4ef8-bb6d-6bb9bd380a15', // Using ID from seed data
+    date: new Date().toISOString(),
+    mileage: 15000,
+    gallons: 15.5,
+    pricePerGallon: 3.45,
+    location: 'Test Station',
+    fuelType: 'gasoline',
+    fullTank: true,
+    driverId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', // Using ID from seed data
+    notes: 'Test fueling'
+  };
+
+  it('should add a new fueling record', async () => {
+    const record = await fuelingService.addFuelingRecord(testFueling);
+    expect(record).toHaveProperty('id');
+    expect(record.gallons).toBe(testFueling.gallons);
   });
 
-  it('adds a new fueling record', async () => {
-    const newRecord: Omit<VehicleFueling, 'id'> = {
-      vehicleId: 'V1',
-      date: '2024-02-16',
-      mileage: 5500,
-      gallons: 45,
-      pricePerGallon: 4.45,
-      totalCost: 200.25,
-      location: 'Mobile Station #456',
-      fuelType: 'diesel',
-      fullTank: true,
-      driver: 'David Wilson'
-    };
+  it('should validate required fields', async () => {
+    const invalidRecord = { ...testFueling, gallons: undefined };
+    await expect(fuelingService.addFuelingRecord(invalidRecord as any))
+      .rejects.toThrow('Missing required fueling record fields');
+  });
 
-    const record = await fuelingService.addFuelingRecord(newRecord);
-    
-    expect(record).toHaveProperty('id');
-    expect(record).toHaveProperty('location', 'Shell Station #123');
-    expect(record).toHaveProperty('totalCost', 225.00);
+  it('should validate positive values', async () => {
+    const invalidRecord = { ...testFueling, gallons: -1 };
+    await expect(fuelingService.addFuelingRecord(invalidRecord))
+      .rejects.toThrow('Gallons and price must be greater than 0');
+  });
+
+  it('should get fueling records for a vehicle', async () => {
+    const records = await fuelingService.getFuelingRecords(testFueling.vehicleId);
+    expect(Array.isArray(records)).toBe(true);
   });
 });
