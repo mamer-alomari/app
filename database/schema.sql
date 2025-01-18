@@ -20,17 +20,22 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 CREATE TABLE IF NOT EXISTS vehicles (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    provider_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    make VARCHAR(100) NOT NULL,
-    model VARCHAR(100) NOT NULL,
-    year INTEGER NOT NULL CHECK (year >= 1900),
-    vin VARCHAR(17) UNIQUE NOT NULL,
-    license_plate VARCHAR(20),
-    status VARCHAR(20) CHECK (status IN ('active', 'maintenance', 'retired', 'out_of_service')),
-    mileage INTEGER NOT NULL DEFAULT 0 CHECK (mileage >= 0),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    id VARCHAR(36) PRIMARY KEY,
+    vehicleId VARCHAR(10) NOT NULL UNIQUE,
+    make VARCHAR(50) NOT NULL,
+    model VARCHAR(50) NOT NULL,
+    year INT NOT NULL,
+    vin VARCHAR(17) NOT NULL UNIQUE,
+    licensePlate VARCHAR(10) NOT NULL,
+    registrationExpiry DATE NOT NULL,
+    insurancePolicyNumber VARCHAR(20) NOT NULL,
+    insuranceExpiry DATE NOT NULL,
+    capacity VARCHAR(50) NOT NULL,
+    mileage INT NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'active',
+    maintenanceHistory JSON NOT NULL,
+    fuelingHistory JSON NOT NULL,
+    documents JSON NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS vehicle_maintenance (
@@ -78,6 +83,33 @@ CREATE TABLE IF NOT EXISTS equipment (
     notes TEXT,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS workers (
+    id VARCHAR(36) PRIMARY KEY,
+    workerId VARCHAR(10) NOT NULL UNIQUE,
+    firstName VARCHAR(50) NOT NULL,
+    lastName VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    phone VARCHAR(20) NOT NULL,
+    ssn VARCHAR(11) NOT NULL,
+    role VARCHAR(20) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'active',
+    hireDate DATE NOT NULL,
+    documents JSON NOT NULL,
+    payRate JSON NOT NULL,
+    workHours JSON NOT NULL,
+    payStubs JSON NOT NULL,
+    permissions JSON NOT NULL,
+    supervisor VARCHAR(36),
+    FOREIGN KEY (supervisor) REFERENCES workers(id)
+);
+
+CREATE TABLE IF NOT EXISTS resources (
+    id VARCHAR(36) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    type VARCHAR(50) NOT NULL,
+    quantity INT NOT NULL DEFAULT 0
 );
 
 -- Indexes for better query performance

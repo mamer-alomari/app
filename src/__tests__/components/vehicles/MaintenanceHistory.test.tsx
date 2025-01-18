@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import MaintenanceHistory from '../../../components/vehicles/MaintenanceHistory';
-import { maintenanceService } from '../../../services/api/maintenance.service';
 import { Vehicle } from '../../../types/vehicle';
 import { toast } from 'react-hot-toast';
 
@@ -10,31 +9,37 @@ vi.mock('react-hot-toast');
 vi.mock('../../../services/api/maintenance.service');
 
 const mockVehicle: Vehicle = {
-  id: 'V1',
-  vehicleId: 'TRK-001',
-  make: 'Ford',
-  model: 'F-650',
-  year: 2022,
-  vin: '1HGCM82633A123456',
-  licensePlate: 'ABC123',
-  registrationExpiry: '2024-12-31',
-  insurancePolicyNumber: 'INS123456',
-  insuranceExpiry: '2024-12-31',
-  capacity: '26ft - 10,000 lbs',
-  status: 'active',
-  maintenanceHistory: [
-    {
-      id: 'M1',
-      serviceType: 'Oil Change',
-      serviceDate: '2024-01-15',
-      mileage: 5000,
-      description: 'Regular oil change and inspection',
-      totalCost: 150.00,
-      performedBy: 'Service Center A',
-      nextServiceMileage: 10000,
-      status: 'completed'
+    id: 'V1',
+    vehicleId: 'TRK-001',
+    make: 'Ford',
+    model: 'F-650',
+    year: 2022,
+    vin: '1HGCM82633A123456',
+    licensePlate: 'ABC123',
+    registrationExpiry: '2024-12-31',
+    insurancePolicyNumber: 'INS123456',
+    insuranceExpiry: '2024-12-31',
+    capacity: '26ft - 10,000 lbs',
+    status: 'active',
+    maintenanceHistory: [
+        {
+            id: 'M1',
+            serviceType: 'Oil Change',
+            serviceDate: '2024-01-15',
+            mileage: 5000,
+            description: 'Regular oil change and inspection',
+            totalCost: 150.00,
+            performedBy: 'Service Center A',
+            nextServiceMileage: 10000,
+            status: 'completed'
+        }
+    ],
+    mileage: 0,
+    fuelingHistory: [],
+    documents: {
+        registration: '',
+        insurance: ''
     }
-  ]
 };
 
 describe('MaintenanceHistory Component', () => {
@@ -57,8 +62,14 @@ describe('MaintenanceHistory Component', () => {
   it('adds new maintenance record', async () => {
     render(<MaintenanceHistory vehicle={mockVehicle} />);
 
+    // Debug the rendered output
+    screen.debug();
+
     // Open modal
     fireEvent.click(screen.getByText('Add Service Record'));
+
+    // Debug the rendered output after opening modal
+    screen.debug();
 
     // Fill form
     fireEvent.change(screen.getByLabelText('Service Type'), {
@@ -78,7 +89,7 @@ describe('MaintenanceHistory Component', () => {
     fireEvent.click(screen.getByText('Add Record'));
 
     await waitFor(() => {
-      expect(screen.getByText('Service record added successfully')).toBeInTheDocument();
+      expect(toast.success).toHaveBeenCalledWith('Service record added successfully');
     });
   });
 

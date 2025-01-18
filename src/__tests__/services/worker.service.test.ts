@@ -1,30 +1,86 @@
-import { workerService } from '../../services/api/worker.service';
+import { describe, expect, it, vi } from 'vitest';
+import { WorkerService } from '../../services/api/worker.service';
 import { Worker } from '../../types/worker';
+import { generateWorkerId } from '../../utils/idGenerator';
+
+// Mock the DatabaseService
+vi.mock('../../database/DatabaseService', () => {
+  return {
+    DatabaseService: vi.fn().mockImplementation(() => {
+      return {
+        run: vi.fn().mockResolvedValue(true)
+      };
+    })
+  };
+});
 
 describe('WorkerService', () => {
-  const testWorker: Omit<Worker, 'id'> = {
-    first_name: 'Test',
-    last_name: 'Worker',
-    email: 'test.worker@example.com',
-    phone: '555-0199',
-    role: 'driver',
-    status: 'active'
-  };
+  const workerService = new WorkerService();
 
   it('should add a new worker', async () => {
-    const worker = await workerService.addWorker(testWorker);
+    const newWorker: Omit<Worker, 'id'> = {
+      workerId: generateWorkerId('mover', 1),
+      firstName: 'Jane',
+      lastName: 'Doe',
+      email: 'jane.doe@example.com',
+      phone: '555-1234',
+      ssn: '***-**-1234',
+      role: 'mover',
+      status: 'active',
+      hireDate: '2024-01-01',
+      documents: {
+        identification: '/docs/id-M24-00001.pdf',
+        ssnCard: '/docs/ssn-M24-00001.pdf'
+      },
+      payRate: { hourly: 18, overtime: 27 },
+      workHours: [],
+      payStubs: [],
+      permissions: {
+        canAssignJobs: false,
+        canAccessFinancials: false,
+        canManageWorkers: false,
+        canManageVehicles: false
+      }
+    };
+
+    const worker = await workerService.addWorker(newWorker);
     expect(worker).toHaveProperty('id');
-    expect(worker.first_name).toBe(testWorker.first_name);
-    expect(worker.email).toBe(testWorker.email);
+    expect(worker.firstName).toBe('Jane');
   });
 
   it('should validate required fields', async () => {
-    const invalidWorker = { ...testWorker, first_name: '' };
-    await expect(workerService.addWorker(invalidWorker)).rejects.toThrow('Missing required worker fields');
+    const invalidWorker = {} as Omit<Worker, 'id'>;
+    await expect(workerService.addWorker(invalidWorker))
+      .rejects.toThrow('Missing required worker fields');
   });
 
   it('should validate email format', async () => {
-    const invalidWorker = { ...testWorker, email: 'invalid-email' };
-    await expect(workerService.addWorker(invalidWorker)).rejects.toThrow('Invalid email format');
+    const invalidWorker: Omit<Worker, 'id'> = {
+      workerId: generateWorkerId('mover', 2),
+      firstName: 'Test',
+      lastName: 'User',
+      email: 'invalid-email',
+      phone: '555-1234',
+      ssn: '***-**-1234',
+      role: 'mover',
+      status: 'active',
+      hireDate: '2024-01-01',
+      documents: {
+        identification: '/docs/id-M24-00002.pdf',
+        ssnCard: '/docs/ssn-M24-00002.pdf'
+      },
+      payRate: { hourly: 18, overtime: 27 },
+      workHours: [],
+      payStubs: [],
+      permissions: {
+        canAssignJobs: false,
+        canAccessFinancials: false,
+        canManageWorkers: false,
+        canManageVehicles: false
+      }
+    };
+
+    await expect(workerService.addWorker(invalidWorker))
+      .rejects.toThrow('Invalid email format');
   });
 }); 

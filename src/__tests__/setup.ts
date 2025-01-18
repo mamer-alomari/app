@@ -1,3 +1,4 @@
+import { beforeAll, afterAll } from 'vitest';
 import { setupTestDb, teardownTestDb } from '../config/database.test';
 
 beforeAll(async () => {
@@ -6,4 +7,4 @@ beforeAll(async () => {
 
 afterAll(async () => {
   await teardownTestDb();
-}); 
+});

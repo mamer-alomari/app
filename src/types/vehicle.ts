@@ -1,4 +1,33 @@
-import { VehicleMaintenance, VehicleFueling } from './maintenance';
+export type VehicleStatus = 'active' | 'maintenance' | 'retired';
+
+export interface MaintenanceRecord {
+  id: string;
+  serviceType: string;
+  serviceDate: string;
+  mileage: number;
+  description: string;
+  totalCost: number;
+  performedBy: string;
+  nextServiceMileage: number;
+  status: 'scheduled' | 'in_progress' | 'completed';
+}
+
+export interface FuelingRecord {
+  id: string;
+  date: string;
+  location: string;
+  gallons: number;
+  pricePerGallon: number;
+  totalCost: number;
+  mileage: number;
+  driver: string;
+  fuelType: string;
+}
+
+export interface VehicleDocuments {
+  registration: string;
+  insurance: string;
+}
 
 export interface Vehicle {
   id: string;
@@ -8,22 +37,27 @@ export interface Vehicle {
   year: number;
   vin: string;
   licensePlate: string;
-  registrationNumber: string;
   registrationExpiry: string;
   insurancePolicyNumber: string;
   insuranceExpiry: string;
   capacity: string;
-  currentMileage: number;
-  lastServiceMileage: number;
-  nextServiceMileage: number;
-  fuelType: 'gasoline' | 'diesel';
-  fuelCapacity: number;
-  currentFuelLevel: number;
-  status: 'active' | 'maintenance' | 'inactive';
-  maintenanceHistory: VehicleMaintenance[];
-  fuelingHistory: VehicleFueling[];
-  documents: {
-    registration?: string;
-    insurance?: string;
-  };
+  mileage: number;
+  status: VehicleStatus;
+  maintenanceHistory: MaintenanceRecord[];
+  fuelingHistory: FuelingRecord[];
+  documents: VehicleDocuments;
 }
+
+export interface VehicleMaintenance {
+  id: string;
+  serviceType: string;
+  serviceDate: string;
+  mileage: number;
+  description: string;
+  totalCost: number;
+  performedBy: string;
+  nextServiceMileage: number;
+  status: string;
+}
+
+export { VehicleMaintenance };

@@ -1,14 +1,5 @@
+import { WorkerSchedule, WorkerShift, VehicleSchedule } from '../types/schedule';
 import { format, addDays } from 'date-fns';
-
-export interface WorkerSchedule {
-  workerId: string;
-  shifts: {
-    date: string;
-    startTime: string;
-    endTime: string;
-    jobId?: string;
-  }[];
-}
 
 // Helper to generate dates
 const today = new Date();
@@ -30,21 +21,14 @@ export const workerSchedules: WorkerSchedule[] = [
       { date: formatDate(2), startTime: '10:00', endTime: '18:00' },
       { date: formatDate(4), startTime: '09:00', endTime: '17:00' }
     ]
-  },
+  }
+];
+
+export const vehicleSchedules: VehicleSchedule[] = [
   {
-    workerId: 'W3',
-    shifts: [
-      { date: formatDate(0), startTime: '14:00', endTime: '22:00', jobId: 'MOV-5678' },
-      { date: formatDate(1), startTime: '14:00', endTime: '22:00' },
-      { date: formatDate(3), startTime: '14:00', endTime: '22:00' }
-    ]
-  },
-  {
-    workerId: 'W4',
-    shifts: [
-      { date: formatDate(1), startTime: '09:00', endTime: '17:00' },
-      { date: formatDate(2), startTime: '09:00', endTime: '17:00' },
-      { date: formatDate(4), startTime: '09:00', endTime: '17:00' }
-    ]
+    id: 'S1',
+    vehicleId: '44444444-4444-4444-4444-444444444444',
+    date: '2024-03-20',
+    tasks: ['Oil Change', 'Tire Rotation']
   }
 ];

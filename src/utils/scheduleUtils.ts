@@ -1,26 +1,40 @@
 import { format, parseISO, isWithinInterval } from 'date-fns';
 import { workerSchedules } from '../data/scheduleData';
+import { WorkerSchedule } from '../types/schedule';
 
 /**
  * Check if a worker is available for a given time slot
  */
 export function checkWorkerAvailability(
-  workerId: string,
+  workerSchedule: WorkerSchedule,
   date: string,
   startTime: string,
   endTime: string
 ): boolean {
-  const schedule = workerSchedules.find(s => s.workerId === workerId);
-  if (!schedule) return true; // No schedule means available
+  // If worker has no shifts, they're available
+  if (!workerSchedule.shifts.length) {
+    return true;
+  }
 
-  const targetStart = parseISO(`${date}T${startTime}`);
-  const targetEnd = parseISO(`${date}T${endTime}`);
+  const newStart = new Date(`${date}T${startTime}`).getTime();
+  const newEnd = new Date(`${date}T${endTime}`).getTime();
 
-  return !schedule.shifts.some(shift => {
-    if (shift.date !== date) return false;
-    const shiftStart = parseISO(`${shift.date}T${shift.startTime}`);
-    const shiftEnd = parseISO(`${shift.date}T${shift.endTime}`);
-    return hasTimeOverlap(targetStart, targetEnd, shiftStart, shiftEnd);
+  // Check each existing shift for overlap
+  return !workerSchedule.shifts.some(shift => {
+    // Only check shifts on the same date
+    if (shift.date !== date) {
+      return false;
+    }
+
+    const shiftStart = new Date(`${shift.date}T${shift.startTime}`).getTime();
+    const shiftEnd = new Date(`${shift.date}T${shift.endTime}`).getTime();
+
+    // Check for overlap
+    return (
+      (newStart >= shiftStart && newStart < shiftEnd) || // New shift starts during existing shift
+      (newEnd > shiftStart && newEnd <= shiftEnd) || // New shift ends during existing shift
+      (newStart <= shiftStart && newEnd >= shiftEnd) // New shift completely contains existing shift
+    );
   });
 }
 

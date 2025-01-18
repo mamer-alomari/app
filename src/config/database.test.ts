@@ -29,8 +29,6 @@ export async function setupTestDb() {
   const sqliteSchema = schema
     .replace(/UUID/g, 'TEXT')
     .replace(/TIMESTAMP WITH TIME ZONE/g, 'DATETIME')
-    .replace(/DECIMAL\([^)]+\)/g, 'REAL')
-    .replace(/CREATE TYPE [^;]+;/g, '') // Remove CREATE TYPE statements
     .replace(/GENERATED ALWAYS AS .* STORED/g, '') // Remove computed columns
     .replace(/CREATE EXTENSION.*?;/g, '') // Remove PostgreSQL extensions
     .replace(/CREATE OR REPLACE FUNCTION.*?END;/gms, ''); // Remove PostgreSQL functions

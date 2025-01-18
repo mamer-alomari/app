@@ -1,7 +1,15 @@
-export function generateWorkerId(role: string, sequence: number): string {
-  // Format: [Role Initial]-[Year]-[5-digit sequence]
-  const roleInitial = role.charAt(0).toUpperCase();
-  const year = new Date().getFullYear().toString().slice(-2);
-  const seq = sequence.toString().padStart(5, '0');
-  return `${roleInitial}${year}${seq}`;
+import { WorkerRole } from '../types/worker';
+
+export function generateWorkerId(role: WorkerRole, sequence: number): string {
+  const roleInitialMap: Record<WorkerRole, string> = {
+    mover: 'M',
+    foreman: 'F',
+    driver: 'D',
+    manager: 'R'
+  };
+
+  const roleInitial = roleInitialMap[role];
+  const sequenceNumber = String(sequence).padStart(5, '0');
+  
+  return `${roleInitial}24-${sequenceNumber}`;
 }

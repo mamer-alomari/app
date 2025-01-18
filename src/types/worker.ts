@@ -1,45 +1,39 @@
 export type WorkerRole = 'mover' | 'driver' | 'foreman' | 'manager';
+export type WorkerStatus = 'active' | 'inactive';
+
+export interface WorkerDocuments {
+  identification: string;
+  ssnCard: string;
+  driversLicense?: string;
+}
+
+export interface PayRate {
+  hourly: number;
+  overtime: number;
+}
+
+export interface WorkerPermissions {
+  canAssignJobs: boolean;
+  canAccessFinancials: boolean;
+  canManageWorkers: boolean;
+  canManageVehicles: boolean;
+}
 
 export interface Worker {
   id: string;
-  workerId: string; // Employee ID number (auto-generated)
+  workerId: string;
   firstName: string;
   lastName: string;
   email: string;
   phone: string;
   ssn: string;
   role: WorkerRole;
-  licenseNumber?: string;
-  licenseExpiry?: string;
-  status: 'active' | 'inactive' | 'on_leave';
+  status: WorkerStatus;
   hireDate: string;
-  documents: {
-    identification: string;
-    ssnCard: string;
-    driversLicense?: string;
-  };
-  payRate: {
-    hourly: number;
-    overtime: number;
-  };
-  workHours: WorkHours[];
-  payStubs: PayStub[];
-  supervisor?: string; // ID of the supervising foreman/manager
-  permissions: {
-    canAssignJobs: boolean;
-    canAccessFinancials: boolean;
-    canManageWorkers: boolean;
-    canManageVehicles: boolean;
-  };
-}
-
-export interface WorkHours {
-  id: string;
-  date: string;
-  clockIn: string;
-  clockOut: string;
-  regularHours: number;
-  overtimeHours: number;
-  jobId?: string;
-  notes?: string;
+  documents: WorkerDocuments;
+  payRate: PayRate;
+  workHours: any[]; // Define specific type if needed
+  payStubs: any[]; // Define specific type if needed
+  permissions: WorkerPermissions;
+  supervisor?: string;
 }
