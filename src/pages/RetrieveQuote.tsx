@@ -1,5 +1,8 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../config/supabaseClient';
+import { LoadingSpinner } from '../components/common/LoadingSpinner';
+import { ErrorMessage } from '../components/common/ErrorMessage';
 
 interface QuoteItem {
   name: string;
@@ -37,120 +40,65 @@ const mockQuotes: Quote[] = [
 ];
 
 export default function RetrieveQuote() {
+  const [quoteId, setQuoteId] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
-  const [searchType, setSearchType] = useState<'id' | 'email'>('id');
-  const [searchValue, setSearchValue] = useState('');
-  const [searchResults, setSearchResults] = useState<Quote[]>([]);
-  const [error, setError] = useState('');
 
-  const handleSearch = (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError('');
+    setLoading(true);
+    setError(null);
 
-    const results = mockQuotes.filter(quote => 
-      searchType === 'id' 
-        ? quote.id.toLowerCase() === searchValue.toLowerCase()
-        : quote.id.includes(searchValue)
-    );
+    try {
+      const { data, error } = await supabase
+        .from('quotes')
+        .select('id')
+        .eq('id', quoteId)
+        .single();
 
-    if (results.length === 0) {
-      setError('No quotes found. Please check your information and try again.');
-      setSearchResults([]);
-    } else {
-      setSearchResults(results);
+      if (error) throw error;
+      if (data) {
+        navigate(`/quotes/${quoteId}`);
+      } else {
+        setError('Quote not found');
+      }
+    } catch (err) {
+      setError('Failed to retrieve quote');
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
     }
-  };
+  }
+
+  if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="flex items-center p-4 border-b">
-        <button onClick={() => navigate(-1)} className="text-2xl mr-4">‹</button>
-        <h1 className="text-2xl font-bold">Retrieve Quote</h1>
-      </div>
-
-      <div className="p-4">
-        {/* Search Type Toggle */}
-        <div className="flex gap-4 mb-6">
-          <button
-            onClick={() => setSearchType('id')}
-            className={`flex-1 py-2 rounded-lg ${
-              searchType === 'id'
-                ? 'bg-black text-white'
-                : 'bg-gray-100 text-black'
-            }`}
-          >
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-2xl font-bold mb-6">Retrieve Quote</h1>
+      {error && <ErrorMessage message={error} />}
+      <form onSubmit={handleSubmit} className="max-w-md">
+        <div className="mb-4">
+          <label htmlFor="quoteId" className="block text-gray-700 mb-2">
             Quote ID
-          </button>
-          <button
-            onClick={() => setSearchType('email')}
-            className={`flex-1 py-2 rounded-lg ${
-              searchType === 'email'
-                ? 'bg-black text-white'
-                : 'bg-gray-100 text-black'
-            }`}
-          >
-            Email
-          </button>
-        </div>
-
-        {/* Search Form */}
-        <form onSubmit={handleSearch} className="mb-6">
+          </label>
           <input
-            type={searchType === 'email' ? 'email' : 'text'}
-            placeholder={searchType === 'id' ? 'Enter Quote ID' : 'Enter Email Address'}
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-            className="w-full p-4 border rounded-lg mb-4"
+            type="text"
+            id="quoteId"
+            value={quoteId}
+            onChange={(e) => setQuoteId(e.target.value)}
+            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter your quote ID"
             required
           />
-          <button
-            type="submit"
-            className="w-full bg-black text-white text-lg py-4 rounded-lg"
-          >
-            Search Quote ›
-          </button>
-        </form>
-
-        {/* Error Message */}
-        {error && (
-          <p className="text-red-500 text-center mb-6">{error}</p>
-        )}
-
-        {/* Search Results */}
-        {searchResults.map(quote => (
-          <div
-            key={quote.id}
-            className="border rounded-lg p-4 mb-4 cursor-pointer hover:border-black"
-            onClick={() => navigate(`/quote/${quote.id}`, { state: { quote } })}
-          >
-            <div className="flex justify-between items-start mb-2">
-              <div>
-                <h3 className="font-semibold">{quote.id}</h3>
-                <p className="text-sm text-gray-500">{quote.date}</p>
-              </div>
-              <span className="font-bold">${quote.price}</span>
-            </div>
-            
-            <div className="mb-2">
-              <p className="text-sm text-gray-500">Items:</p>
-              <p>{quote.items.map(item => 
-                `${item.quantity}x ${item.name}`
-              ).join(', ')}</p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2 text-sm">
-              <div>
-                <p className="text-gray-500">From:</p>
-                <p className="truncate">{quote.source}</p>
-              </div>
-              <div>
-                <p className="text-gray-500">To:</p>
-                <p className="truncate">{quote.destination}</p>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+        </div>
+        <button
+          type="submit"
+          className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          Retrieve Quote
+        </button>
+      </form>
     </div>
   );
 }

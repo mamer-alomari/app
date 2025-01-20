@@ -1,8 +1,11 @@
 export interface WorkerShift {
+  id: string;
+  workerId: string;
   date: string;
   startTime: string;
   endTime: string;
   jobId?: string;
+  status: 'scheduled' | 'in_progress' | 'completed' | 'cancelled';
 }
 
 export interface WorkerSchedule {
@@ -15,4 +18,5 @@ export interface VehicleSchedule {
   vehicleId: string;
   date: string;
   tasks: string[];
+  status: 'scheduled' | 'in_progress' | 'completed' | 'cancelled';
 } 

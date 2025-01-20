@@ -25,4 +25,31 @@ INSERT INTO vehicle_fueling (vehicle_id, driver_id, date, mileage, gallons, pric
 -- Insert sample equipment
 INSERT INTO equipment (provider_id, name, type, serial_number, status, condition) VALUES
 ('22222222-2222-2222-2222-222222222222', 'Dolly #1', 'dolly', 'DOL001', 'available', 'good'),
-('22222222-2222-2222-2222-222222222222', 'Moving Blanket Set', 'blankets', 'BLK001', 'in_use', 'good'); 
+('22222222-2222-2222-2222-222222222222', 'Moving Blanket Set', 'blankets', 'BLK001', 'in_use', 'good');
+
+-- Seed test users
+INSERT INTO users (email) VALUES
+    ('test@example.com'),
+    ('demo@example.com');
+
+-- Seed test quotes
+INSERT INTO quotes (user_id, customer_name, source_address, destination_address, items, total_price) 
+SELECT 
+    (SELECT id FROM users WHERE email = 'test@example.com'),
+    'John Doe',
+    '123 Start St',
+    '456 End Ave',
+    '[{"name": "Sofa", "size": "Large", "quantity": 1}, {"name": "Chair", "size": "Medium", "quantity": 2}]'::jsonb,
+    1299.99;
+
+-- Seed test resources
+INSERT INTO resources (name, type, quantity, status) VALUES
+    ('Moving Truck - Small', 'vehicle', 3, 'available'),
+    ('Moving Truck - Large', 'vehicle', 2, 'available'),
+    ('Dolly', 'equipment', 10, 'available'),
+    ('Moving Blankets', 'supplies', 50, 'available');
+
+-- Seed test schedules
+INSERT INTO schedules (worker_id, date, start_time, end_time, status) VALUES
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', '2024-03-01', '09:00', '17:00', 'scheduled'),
+    ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', '2024-03-02', '09:00', '17:00', 'scheduled'); 

@@ -9,14 +9,37 @@ CREATE TYPE fuel_type AS ENUM ('gasoline', 'diesel', 'electric', 'hybrid');
 -- Core Tables
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    email VARCHAR(255) UNIQUE NOT NULL,
+    email TEXT UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     first_name VARCHAR(100),
     last_name VARCHAR(100),
     phone VARCHAR(20),
     role VARCHAR(20) CHECK (role IN ('admin', 'provider', 'customer')),
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS quotes (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    customer_name TEXT NOT NULL,
+    source_address TEXT NOT NULL,
+    destination_address TEXT NOT NULL,
+    items JSONB NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending',
+    total_price DECIMAL(10,2) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS schedules (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    worker_id UUID NOT NULL,
+    date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    status TEXT NOT NULL DEFAULT 'scheduled',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 CREATE TABLE IF NOT EXISTS vehicles (
@@ -106,10 +129,12 @@ CREATE TABLE IF NOT EXISTS workers (
 );
 
 CREATE TABLE IF NOT EXISTS resources (
-    id VARCHAR(36) PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    type VARCHAR(50) NOT NULL,
-    quantity INT NOT NULL DEFAULT 0
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name TEXT NOT NULL,
+    type TEXT NOT NULL,
+    quantity INTEGER NOT NULL DEFAULT 0,
+    status TEXT NOT NULL DEFAULT 'available',
+    last_updated TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Indexes for better query performance
@@ -121,6 +146,9 @@ CREATE INDEX idx_fueling_vehicle ON vehicle_fueling(vehicle_id);
 CREATE INDEX idx_fueling_date ON vehicle_fueling(date);
 CREATE INDEX idx_equipment_provider ON equipment(provider_id);
 CREATE INDEX idx_equipment_status ON equipment(status);
+CREATE INDEX IF NOT EXISTS idx_quotes_user_id ON quotes(user_id);
+CREATE INDEX IF NOT EXISTS idx_schedules_worker_date ON schedules(worker_id, date);
+CREATE INDEX IF NOT EXISTS idx_resources_type ON resources(type);
 
 -- Trigger for updating timestamps
 CREATE OR REPLACE FUNCTION update_updated_at_column()

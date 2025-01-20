@@ -13,6 +13,10 @@
       - Service history
     - `vehicle_assignments`
       - Track vehicle assignments to jobs
+    - `quotes`
+      - Track quotes
+    - `schedules`
+      - Track schedules
 
   2. Security
     - Enable RLS on all tables
@@ -83,6 +87,32 @@ CREATE TABLE vehicle_assignments (
   updated_at timestamptz DEFAULT now()
 );
 
+-- Quotes table
+CREATE TABLE quotes (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    customer_name TEXT NOT NULL,
+    source_address TEXT NOT NULL,
+    destination_address TEXT NOT NULL,
+    items JSONB NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending',
+    total_price DECIMAL(10,2) NOT NULL,
+    user_id UUID REFERENCES auth.users(id)
+);
+
+-- Schedules table
+CREATE TABLE schedules (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    worker_id UUID REFERENCES workers(id),
+    date DATE NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    job_id UUID,
+    status TEXT NOT NULL DEFAULT 'scheduled',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Enable RLS
 ALTER TABLE vehicles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE vehicle_documents ENABLE ROW LEVEL SECURITY;
@@ -101,3 +131,8 @@ CREATE POLICY "Vehicle maintenance records are viewable by authenticated users" 
 
 CREATE POLICY "Vehicle assignments are viewable by authenticated users" ON vehicle_assignments
   FOR SELECT TO authenticated USING (true);
+
+-- Add indexes
+CREATE INDEX idx_quotes_user_id ON quotes(user_id);
+CREATE INDEX idx_schedules_worker_id ON schedules(worker_id);
+CREATE INDEX idx_schedules_date ON schedules(date);

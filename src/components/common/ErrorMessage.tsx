@@ -1,19 +1,13 @@
 import React from 'react';
-import { Alert, Box } from '@mui/material';
 
 interface ErrorMessageProps {
   message: string;
 }
 
-export const ErrorMessage = ({ message }: ErrorMessageProps) => {
+export function ErrorMessage({ message }: ErrorMessageProps) {
   return (
-    <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      p={2}
-    >
-      <Alert severity="error">{message}</Alert>
-    </Box>
+    <div className="bg-red-50 border border-red-200 text-red-800 rounded-lg p-4 my-4">
+      <p>{message}</p>
+    </div>
   );
-}; 
+} 
