@@ -4,7 +4,7 @@ import { format, isSameDay, parseISO } from 'date-fns';
 import Calendar from '../../components/schedule/Calendar';
 import NewJobModal from '../../components/schedule/NewJobModal';
 import AssignmentModal from '../../components/schedule/AssignmentModal';
-import { mockScheduledJobs, type ScheduledJob } from '../../data/mockScheduleData';
+import { mockScheduledJobs, type ScheduledJob } from '../../data/mockScheduleData.ts';
 import { mockWorkers, mockVehicles } from '../../data/resourceData';
 import { checkResourceAvailability } from '../../utils/scheduleUtils';
 

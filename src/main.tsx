@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { UserProvider } from './contexts/UserContext';
 import { ToastProvider } from './contexts/ToastContext';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -17,6 +17,29 @@ window.onunhandledrejection = (event) => {
   console.error('Unhandled promise rejection:', event.reason);
 };
 
+const AppWithProviders = () => (
+  <ErrorBoundary>
+    <UserProvider>
+      <ToastProvider>
+        <App />
+      </ToastProvider>
+    </UserProvider>
+  </ErrorBoundary>
+);
+
+const router = createBrowserRouter([
+  {
+    path: "*",
+    element: <AppWithProviders />,
+    errorElement: <ErrorBoundary />
+  }
+], {
+  future: {
+    v7_relativeSplatPath: true,
+    v7_startTransition: true
+  }
+});
+
 const root = document.getElementById('root');
 
 if (!root) {
@@ -25,14 +48,6 @@ if (!root) {
 
 ReactDOM.createRoot(root).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <ErrorBoundary>
-        <UserProvider>
-          <ToastProvider>
-            <App />
-          </ToastProvider>
-        </UserProvider>
-      </ErrorBoundary>
-    </BrowserRouter>
+    <RouterProvider router={router} />
   </React.StrictMode>
 );

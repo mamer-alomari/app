@@ -1,9 +1,9 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 import LoadingOverlay from './components/LoadingOverlay';
-import { BrowserRouter as Router } from 'react-router-dom';
 import QuoteHistory from './pages/QuoteHistory';
 import RetrieveQuote from './pages/RetrieveQuote';
+import QuoteDetails from './pages/QuoteDetails';
 
 // Lazy load components with error boundaries
 const Welcome = lazy(() => import('./pages/Welcome').catch(() => ({ default: () => <Navigate to="/" /> })));
@@ -33,48 +33,46 @@ const ProviderProfile = lazy(() => import('./pages/provider/Profile').catch(() =
 
 export default function App() {
   return (
-    <Router>
-      <Suspense fallback={<LoadingOverlay />}>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<Welcome />} />
-          <Route path="/login" element={<Login />} />
-          
-          {/* Customer Routes */}
-          <Route path="/camera" element={<Camera />} />
-          <Route path="/quote" element={<Quote />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path="/customer-details" element={<CustomerDetails />} />
-          <Route path="/freight" element={<Freight />} />
-          <Route path="/payment" element={<Payment />} />
-          <Route path="/payment/success" element={<PaymentSuccess />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          
-          {/* Provider Routes */}
-          <Route path="/provider">
-            <Route path="dashboard" element={<ProviderDashboard />} />
-            <Route path="jobs" element={<ProviderActiveJobs />} />
-            <Route path="jobs/:id/details" element={<ProviderJobDetails />} />
-            <Route path="jobs/:id/scan" element={<ProviderScanItems />} />
-            <Route path="schedule" element={<ProviderSchedule />} />
-            <Route path="workers" element={<ProviderWorkers />} />
-            <Route path="workers/:id" element={<ProviderWorkerDashboard />} />
-            <Route path="vehicles" element={<ProviderVehicles />} />
-            <Route path="vehicles/:id" element={<ProviderVehicleDashboard />} />
-            <Route path="earnings" element={<ProviderEarnings />} />
-            <Route path="warehouse" element={<ProviderWarehouseLayout />} />
-            <Route path="profile" element={<ProviderProfile />} />
-          </Route>
+    <Suspense fallback={<LoadingOverlay />}>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/" element={<Welcome />} />
+        <Route path="/login" element={<Login />} />
+        
+        {/* Customer Routes */}
+        <Route path="/camera" element={<Camera />} />
+        <Route path="/quote" element={<Quote />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/customer-details" element={<CustomerDetails />} />
+        <Route path="/freight" element={<Freight />} />
+        <Route path="/payment" element={<Payment />} />
+        <Route path="/payment/success" element={<PaymentSuccess />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        
+        {/* Provider Routes */}
+        <Route path="/provider">
+          <Route path="dashboard" element={<ProviderDashboard />} />
+          <Route path="jobs" element={<ProviderActiveJobs />} />
+          <Route path="jobs/:id/details" element={<ProviderJobDetails />} />
+          <Route path="jobs/:id/scan" element={<ProviderScanItems />} />
+          <Route path="schedule" element={<ProviderSchedule />} />
+          <Route path="workers" element={<ProviderWorkers />} />
+          <Route path="workers/:id" element={<ProviderWorkerDashboard />} />
+          <Route path="vehicles" element={<ProviderVehicles />} />
+          <Route path="vehicles/:id" element={<ProviderVehicleDashboard />} />
+          <Route path="earnings" element={<ProviderEarnings />} />
+          <Route path="warehouse" element={<ProviderWarehouseLayout />} />
+          <Route path="profile" element={<ProviderProfile />} />
+        </Route>
 
-          {/* Fallback for unknown routes */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+        {/* Fallback for unknown routes */}
+        <Route path="*" element={<Navigate to="/" replace />} />
 
-          {/* New routes */}
-          <Route path="/quotes" element={<QuoteHistory />} />
-          <Route path="/quotes/retrieve" element={<RetrieveQuote />} />
-          <Route path="/quotes/:id" element={<QuoteDetails />} />
-        </Routes>
-      </Suspense>
-    </Router>
+        {/* New routes */}
+        <Route path="/quotes" element={<QuoteHistory />} />
+        <Route path="/quotes/retrieve" element={<RetrieveQuote />} />
+        <Route path="/quotes/:id" element={<QuoteDetails />} />
+      </Routes>
+    </Suspense>
   );
 }
