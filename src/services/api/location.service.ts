@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 interface Location {
   lat: number;
   lng: number;
@@ -9,6 +11,8 @@ interface ETAResponse {
   duration: string;
   arrivalTime: string;
 }
+
+const GOOGLE_MAPS_API_KEY = 'YOUR_GOOGLE_MAPS_API_KEY'; // Replace with your actual API key
 
 export const locationService = {
   async getCurrentLocation(): Promise<Location> {
@@ -25,15 +29,33 @@ export const locationService = {
   },
 
   async calculateETA(origin: Location, destination: Location): Promise<ETAResponse> {
-    // TODO: Implement actual distance matrix calculation
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          distance: '5.2 miles',
-          duration: '15 minutes',
-          arrivalTime: new Date(Date.now() + 15 * 60 * 1000).toISOString()
-        });
-      }, 1000);
-    });
+    try {
+      const response = await axios.get('https://maps.googleapis.com/maps/api/distancematrix/json', {
+        params: {
+          origins: `${origin.lat},${origin.lng}`,
+          destinations: `${destination.lat},${destination.lng}`,
+          key: GOOGLE_MAPS_API_KEY
+        }
+      });
+
+      const data = response.data;
+      if (data.status === 'OK') {
+        const element = data.rows[0].elements[0];
+        if (element.status === 'OK') {
+          return {
+            distance: element.distance.text,
+            duration: element.duration.text,
+            arrivalTime: new Date(Date.now() + element.duration.value * 1000).toISOString()
+          };
+        } else {
+          throw new Error(`Error in response element: ${element.status}`);
+        }
+      } else {
+        throw new Error(`Error in response: ${data.status}`);
+      }
+    } catch (error) {
+      console.error('Error calculating ETA:', error);
+      throw error;
+    }
   }
 };
